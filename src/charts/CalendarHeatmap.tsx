@@ -43,7 +43,12 @@ function mixColor(from: [number, number, number], to: [number, number, number], 
 }
 
 function toDate(v: string | Date): Date {
-  return v instanceof Date ? new Date(v.getFullYear(), v.getMonth(), v.getDate()) : new Date(v);
+  if (v instanceof Date) return new Date(v.getFullYear(), v.getMonth(), v.getDate());
+  // Parse ISO date strings (YYYY-MM-DD…) as *local* dates to avoid the UTC
+  // off-by-one shift that `new Date("YYYY-MM-DD")` (= UTC midnight) causes.
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(v);
+  if (m) return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  return new Date(v);
 }
 
 function startOfDay(d: Date): Date {

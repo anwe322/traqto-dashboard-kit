@@ -22,6 +22,10 @@
 
 Schweregrade: 🔴 hoch · 🟠 mittel · 🟡 niedrig · ⚪ Info
 
+> **Status:** BUG-01 bis BUG-06 sind in diesem Branch **behoben** (Build verifiziert).
+> BUG-07 (npm-audit) und BUG-08 (Typecheck-Config) sind Umgebungs-/Setup-Themen und
+> bleiben offen.
+
 ---
 
 ## 🔴 BUG-01 – Widget zeigt endloses Ladeskelett bei leerem/`null`-Ergebnis

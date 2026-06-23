@@ -179,8 +179,15 @@ function FieldInput({
     );
   }
   if (field.type === "select") {
+    const current = (value as string) ?? "";
+    const known = field.options.some((opt) => opt.value === current);
     return (
-      <select value={(value as string) ?? ""} onChange={(e) => onChange(e.target.value)} style={baseInput}>
+      <select value={current} onChange={(e) => onChange(e.target.value)} style={baseInput}>
+        {!known && (
+          <option value="" disabled>
+            Bitte wählen…
+          </option>
+        )}
         {field.options.map((opt) => (
           <option key={opt.value} value={opt.value}>{opt.label}</option>
         ))}
