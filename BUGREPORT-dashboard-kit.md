@@ -164,6 +164,41 @@ Die **Bibliothek selbst** (`tsconfig.build.json`) baut fehlerfrei. **Fix:** Eige
 
 ---
 
+---
+
+# Nachtrag – vertieftes Audit der übrigen Komponenten
+
+Zweiter Durchgang über `WidgetFrame`, `DashboardToolbar`, `WidgetPicker`,
+`HeatmapChart`, `PieChart`, `BarChart`, `AreaChart`, `ScatterChart`, `RadarChart`,
+`ChartTooltip`, `EmptyState`, `tokens`. Ergebnis: zwei kleinere Bugs (behoben),
+ein kosmetischer Hinweis.
+
+## 🟡 NEW-09 – WidgetPicker zeigt spät registrierte Widgets nicht ✅ behoben
+**Datei:** `src/editor/WidgetPicker.tsx:35`
+
+`const all = useMemo(() => listWidgets(), [])` liest die Widget-Registry nur einmal beim
+ersten Mount. Werden Widgets erst danach registriert (lazy/asynchron), fehlen sie dauerhaft
+im Picker, weil die Komponente montiert bleibt (sie rendert nur `null`, wenn geschlossen).
+
+- **Fix:** Abhängigkeit `[open]` → Registry wird bei jedem Öffnen neu gelesen.
+
+## 🟡 NEW-10 – ChartTooltip: Zahlen < 1000 ohne de-DE-Format ✅ behoben
+**Datei:** `src/charts/ChartTooltip.tsx:43-48`
+
+Werte ≥ 1000 wurden mit `toLocaleString("de-DE")` formatiert (z. B. `1.234,5`), Werte < 1000
+dagegen über `String(Math.round(v*100)/100)` mit **Dezimalpunkt** (`12.5`). Inkonsistentes
+Trennzeichen im selben Tooltip.
+
+- **Fix:** Auch den Klein-Werte-Zweig über `toLocaleString("de-DE", { maximumFractionDigits: 2 })`.
+
+## ⚪ NEW-11 – Hinweis: ungenutzte Drag-Handle-Klassen (kosmetisch, nicht behoben)
+`WidgetFrame` setzt `tdk-widget-handle`, `WidgetHost` `tdk-kpi-drag-handle` – react-grid-layout
+zieht aber über `.tdk-drag-handle` am Item-Wrapper (ganze Karte ist Anfasser). Die
+Header-Klassen sind toter Code; funktional unkritisch. Optional aufräumen oder
+`draggableHandle` auf den Header umstellen, falls nur dort gezogen werden soll.
+
+---
+
 ## Empfohlene nächste Schritte
 1. BUG-01 und BUG-03 zeitnah fixen (sichtbare bzw. datenrelevante Fehler).
 2. **Datums-/Fristenlogik** (BUG-02-Muster) gezielt im Repo `traqto-loop` prüfen –
