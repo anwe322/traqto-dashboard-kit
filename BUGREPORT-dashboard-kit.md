@@ -22,9 +22,8 @@
 
 Schweregrade: 🔴 hoch · 🟠 mittel · 🟡 niedrig · ⚪ Info
 
-> **Status:** BUG-01 bis BUG-06 sind in diesem Branch **behoben** (Build verifiziert).
-> BUG-07 (npm-audit) und BUG-08 (Typecheck-Config) sind Umgebungs-/Setup-Themen und
-> bleiben offen.
+> **Status:** Alle Befunde (BUG-01 bis BUG-08) sind in diesem Branch **behoben**.
+> Verifiziert: `npm run typecheck` ✅, `npm run build` ✅, `npm audit` → **0 vulnerabilities**.
 
 ---
 
@@ -144,22 +143,24 @@ Bei negativem `index` ist `index % len` in JS negativ → `colors[-1]` = `undefi
 
 ---
 
-## ⚪ BUG-07 / Hinweis – `npm audit`: 1 high-severity Vulnerability
-`npm install` meldet **2 Vulnerabilities (1 low, 1 high)**. Vor Release `npm audit`
-prüfen und (ggf. via `npm audit fix`) beheben.
+## ⚪ BUG-07 / Hinweis – `npm audit`: 1 high-severity Vulnerability ✅ behoben
+`npm install` meldete **2 Vulnerabilities (1 low, 1 high)** in Dev-Abhängigkeiten
+(`@babel/core`, `vite`/`launch-editor`). Per `npm audit fix` auf gepatchte Versionen
+innerhalb der bestehenden Ranges aktualisiert → `npm audit` meldet jetzt
+**0 vulnerabilities** (nur `package-lock.json` betroffen).
 
 ---
 
-## ⚪ BUG-08 – `npm run typecheck` schlägt durch Beispiel-Code fehl
+## ⚪ BUG-08 – `npm run typecheck` schlägt durch Beispiel-Code fehl ✅ behoben
 Der Typecheck (`tsc --noEmit` über die Root-`tsconfig`) bezieht `examples/playground` ein
 und scheitert dort an:
 - `Cannot find module '@traqto/dashboard-kit'` (Paket erst nach `build` auflösbar),
 - `Cannot find name '__dirname' / module 'node:path'` (fehlende `@types/node`),
 - mehreren impliziten `any` (`noImplicitAny`).
 
-Die **Bibliothek selbst** (`tsconfig.build.json`) baut fehlerfrei. Empfehlung: Beispiele
-aus dem Typecheck ausschließen oder `@types/node` + Pfad-Alias ergänzen, damit
-`typecheck` als CI-Gate nutzbar ist.
+Die **Bibliothek selbst** (`tsconfig.build.json`) baut fehlerfrei. **Fix:** Eigene
+`tsconfig.typecheck.json` (nur `src`) ergänzt und `typecheck`-Script darauf umgestellt
+(`tsc -p tsconfig.typecheck.json`) → `npm run typecheck` ist jetzt als CI-Gate grün.
 
 ---
 
