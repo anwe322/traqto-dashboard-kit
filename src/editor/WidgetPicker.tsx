@@ -32,7 +32,9 @@ export function WidgetPicker({ open, onClose }: WidgetPickerProps) {
   const [category, setCategory] = useState<WidgetCategory | "all">("all");
 
   const usedIds = useMemo(() => new Set(layout.items.map((i) => i.widgetId)), [layout.items]);
-  const all = useMemo(() => listWidgets(), []);
+  // Re-read the registry every time the picker opens so widgets registered
+  // after first mount (lazy registration) still show up.
+  const all = useMemo(() => listWidgets(), [open]);
   const grouped = useMemo(() => {
     const filtered = all.filter((w) => {
       if (category !== "all" && w.category !== category) return false;

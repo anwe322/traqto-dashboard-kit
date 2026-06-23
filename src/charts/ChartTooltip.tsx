@@ -43,7 +43,7 @@ export function ChartTooltip({ active, payload, label }: TooltipProps<number, st
 function formatValue(v: unknown): string {
   if (typeof v === "number") {
     if (Math.abs(v) >= 1000) return v.toLocaleString("de-DE", { maximumFractionDigits: 1 });
-    return String(Math.round(v * 100) / 100);
+    return v.toLocaleString("de-DE", { maximumFractionDigits: 2 });
   }
   return String(v ?? "");
 }
