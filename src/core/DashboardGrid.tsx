@@ -52,12 +52,16 @@ export function DashboardGrid({
   const handleLayoutChange = (next: Layout[]) => {
     if (!onLayoutChange) return;
     const byId = new Map(layout.items.map((it) => [it.i, it]));
-    const merged: LayoutItem[] = next.map((n) => {
-      const prev = byId.get(n.i);
-      if (!prev) return { i: n.i, x: n.x, y: n.y, w: n.w, h: n.h, widgetId: "", config: {} };
-      if (prev.x === n.x && prev.y === n.y && prev.w === n.w && prev.h === n.h) return prev;
-      return { ...prev, x: n.x, y: n.y, w: n.w, h: n.h };
-    });
+    const merged: LayoutItem[] = next
+      .map((n) => {
+        const prev = byId.get(n.i);
+        // Unknown id (grid/state desync) — skip instead of creating an empty
+        // placeholder item that would clobber the original widget.
+        if (!prev) return null;
+        if (prev.x === n.x && prev.y === n.y && prev.w === n.w && prev.h === n.h) return prev;
+        return { ...prev, x: n.x, y: n.y, w: n.w, h: n.h };
+      })
+      .filter((it): it is LayoutItem => it !== null);
     onLayoutChange(merged);
   };
 

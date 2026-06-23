@@ -3,12 +3,12 @@ import type { PaletteName } from "../core/types";
 
 export function getSeriesColor(palette: PaletteName, index: number): string {
   const colors = palettes[palette].colors;
-  return colors[index % colors.length];
+  // Wrap safely for negative indices too (JS `%` keeps the sign).
+  return colors[((index % colors.length) + colors.length) % colors.length];
 }
 
 export function getSeriesColors(palette: PaletteName, count: number): string[] {
-  const colors = palettes[palette].colors;
   const out: string[] = [];
-  for (let i = 0; i < count; i++) out.push(colors[i % colors.length]);
+  for (let i = 0; i < count; i++) out.push(getSeriesColor(palette, i));
   return out;
 }

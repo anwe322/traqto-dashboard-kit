@@ -74,14 +74,13 @@ export function WidgetHost({ item, ctx, editMode, onRemove, onConfigure }: Widge
   };
 
   const canExportCsv = csvData != null && csvData.length > 0;
-  const body =
-    error != null ? (
-      <ErrorState message={error.message} />
-    ) : data == null ? (
-      <LoadingSkeleton />
-    ) : (
-      def.render({ data, cfg, loading, error })
-    );
+  const body = loading ? (
+    <LoadingSkeleton />
+  ) : error != null ? (
+    <ErrorState message={error.message} />
+  ) : (
+    def.render({ data, cfg, loading, error })
+  );
 
   if (def.category === "kpi") {
     return (

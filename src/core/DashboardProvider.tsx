@@ -73,17 +73,17 @@ export function DashboardProvider({ defaultLayout, ctx = {}, onLayoutChange, sto
       ctx,
       addWidget: (item) => {
         const id = `${item.widgetId}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
-        setLayout({ ...layout, items: [...layout.items, { ...item, i: id }] });
+        setLayoutState((prev) => ({ ...prev, items: [...prev.items, { ...item, i: id }] }));
       },
       removeWidget: (id) =>
-        setLayout({ ...layout, items: layout.items.filter((i) => i.i !== id) }),
+        setLayoutState((prev) => ({ ...prev, items: prev.items.filter((i) => i.i !== id) })),
       updateWidgetConfig: (id, config) =>
-        setLayout({
-          ...layout,
-          items: layout.items.map((i) => (i.i === id ? { ...i, config: { ...i.config, ...config } } : i)),
-        }),
-      updateItems: (items) => setLayout({ ...layout, items }),
-      setPalette: (p) => setLayout({ ...layout, palette: p }),
+        setLayoutState((prev) => ({
+          ...prev,
+          items: prev.items.map((i) => (i.i === id ? { ...i, config: { ...i.config, ...config } } : i)),
+        })),
+      updateItems: (items) => setLayoutState((prev) => ({ ...prev, items })),
+      setPalette: (p) => setLayoutState((prev) => ({ ...prev, palette: p })),
       resetLayout: () => {
         if (storageKey && typeof window !== "undefined") {
           try {
