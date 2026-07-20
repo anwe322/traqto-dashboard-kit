@@ -34,6 +34,15 @@ export {
   type ExportFormat,
 } from "./core/export";
 
+export {
+  createShareLink,
+  parseShareLink,
+  encodeShareLayout,
+  decodeShareLayout,
+  sanitizeSharedLayout,
+  type CreateShareLinkOptions,
+} from "./core/shareLink";
+
 export { ThemeProvider, useTheme } from "./theme/ThemeProvider";
 export { palettes, defaultPalette, tokens } from "./theme/tokens";
 
