@@ -21,7 +21,15 @@ still-falsche Ergebnisse, nicht Feature-Lücken).
 | Production-Build | ✅ Exit 0 | ✅ Exit 0 (+ Offline-Build + PWA) |
 | Typecheck | ✅ `tsc -b` | ✅ `tsc -b` (mit Vendor-Submodul) |
 | Unit/Integration (Vitest) | ✅ 1753 grün / 1 Skip | ✅ 1113 grün |
-| E2E (Playwright, echtes Chromium) | siehe VERIFIKATION-Doc | siehe VERIFIKATION-Doc |
+| E2E-Klicktests (Playwright, echtes Chromium) | ✅ 6/6 Lifecycle-Flows grün¹ | ✅ Smoke/Navigation grün² |
+| Screenshot-Rundgang Hauptseiten | ✅ 6 Seiten gerendert | ✅ 6 Seiten gerendert |
+
+¹ Onboarding, Beauftragung (WebCrypto + PDF-Urkunde), Nachweis hochladen→ablaufend→erneuern
+→**Persistenz nach Reload** (isoliert 2×2 grün verifiziert — die frühere Rot-Meldung war ein
+Last-Timeout-Flake; `persistField` schreibt synchron in den Storage, code-verifiziert).
+² App-Start, Navigation zu allen Hauptrouten, „rendert ohne ErrorBoundary", Public-Schnellerfassung
+`/q`, Legal-Seiten. Alle einzeln grün. Die scheinbaren E2E-„Fehler" im ersten Sammellauf waren
+**Umgebungs-Artefakte**, kein App-Defekt (siehe Fußnote Fonts).
 
 ---
 
@@ -93,6 +101,27 @@ gesetzlich relevante Prüf-Fälligkeit 1–3 Tage zu spät im falschen Monat. De
   `beauftragenGate` (ausgeschieden + abgelaufen), Datumsvalidierung Bestellungsurkunde.
 - **Fleet lib:** `dueStatus`, `geschaeftsjahr` (Grenztage/Schaltjahr), `datevExport` (Konten/
   Vorzeichen/BOM), `driverLicense` (alle Grenztage), `terminFollowUp` (DST-fest) – korrekt.
+
+## Klick-Tests: was rot war — und warum es kein App-Bug ist
+Im ersten Sammel-E2E-Lauf gab es rote Ergebnisse. Jede Ursache wurde bis auf den Grund verfolgt:
+- **Last-Timeouts:** Zwei E2E-Suiten + drei Audit-Agenten liefen gleichzeitig auf einer CPU;
+  `page.goto` überschritt 30 s. Isoliert/nacheinander auf ruhiger Maschine: grün.
+- **Browser-Version:** Die Projekte erwarten Chromium 1228, vorinstalliert ist 1194 → Browser
+  startete nicht. Behoben per `executablePath` auf das vorhandene Chromium (nur Test-Config).
+- **Persistenz-Spec (Loop):** einmal rot unter Last, isoliert **2/2 grün**; Code (`persistField`)
+  schreibt synchron — Flake, kein Bug.
+
+### F-4 · Beobachtung (nicht Bug): Google Fonts render-blockierend von Google-CDN geladen
+**Repo/Datei:** traqto-fleet · `index.html` (`<link rel="stylesheet" href="https://fonts.googleapis.com/…">`)
+· **Schwere: Niedrig (Robustheit + DSGVO)**
+
+Beim E2E fiel auf, dass jede Navigation ~12 s hing — Ursache: der Google-Fonts-Request ist in dieser
+Sandbox (kein Outbound) blockiert und läuft in einen Timeout. **Für Endkunden mit Internet kein
+Hänger** (Font lädt in ~100 ms, `display=swap` zeigt sofort System-Fallback). Aber zwei echte,
+kleine Punkte bleiben: (1) **DSGVO** — dynamisches Nachladen von Google Fonts überträgt die Kunden-IP
+an Google (in DE gerichtlich als Verstoß gewertet); für ein Compliance-Produkt heikel. (2) In
+Umgebungen ohne Google-Zugriff (strenge Firmen-Firewall) verzögert sich der Erst-Load.
+**Fix (optional):** Fonts self-hosten (lokal bundeln) statt vom Google-CDN.
 
 ## Empfohlene Priorität
 1. **N-1** (Duplikat-Zertifikat / Aussperrung) und **F-3** (gesetzliche Prüffrist zu spät) – zuerst.
