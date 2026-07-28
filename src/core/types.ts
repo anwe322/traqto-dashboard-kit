@@ -10,7 +10,7 @@ export type ConfigField =
   | { key: string; label: string; type: "palette"; default?: PaletteName }
   | { key: string; label: string; type: "range"; min: number; max: number; step?: number; default?: number };
 
-export type PaletteName = "lavender" | "traqto" | "sunrise" | "aurora" | "earth";
+export type PaletteName = "lavender" | "traqto" | "sunrise" | "aurora" | "earth" | "dezent";
 
 export type DataContext = {
   userId?: string;

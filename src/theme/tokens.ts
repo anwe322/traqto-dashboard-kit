@@ -38,9 +38,18 @@ export const palettes: Record<PaletteName, Palette> = {
     colors: ["#5fa363", "#c8961c", "#d96030", "#6b4f3f", "#9b6a3f", "#3d7a4e"],
     gradient: ["#5fa363", "#c8961c"],
   },
+  // W3-C: gedeckte Standard-Palette, abgeleitet aus den bereits entsättigten
+  // Statusfarben der App (src/theme.ts: success #167a3e / warning #c17f3a /
+  // danger #a83228 / info #2563eb) plus dem Navy-Ton. Keine grellen Punkte mehr.
+  dezent: {
+    name: "dezent",
+    label: "Gedeckt",
+    colors: ["#2f4b7c", "#c17f3a", "#167a3e", "#2563eb", "#a83228", "#6b5b80"],
+    gradient: ["#2f4b7c", "#2563eb"],
+  },
 };
 
-export const defaultPalette: PaletteName = "traqto";
+export const defaultPalette: PaletteName = "dezent";
 
 export const tokens = {
   radius: {
@@ -56,24 +65,25 @@ export const tokens = {
     lg: "20px",
     xl: "28px",
   },
+  // W3-C: neutrale (navy-basierte) Schatten statt Violett (124,58,237).
   shadow: {
-    sm: "0 2px 10px rgba(124, 58, 237, 0.06)",
-    md: "0 10px 30px rgba(124, 58, 237, 0.10)",
-    lg: "0 22px 56px rgba(124, 58, 237, 0.14)",
+    sm: "0 2px 10px rgba(15, 23, 42, 0.06)",
+    md: "0 10px 30px rgba(15, 23, 42, 0.10)",
+    lg: "0 22px 56px rgba(15, 23, 42, 0.14)",
   },
   surface: {
     card: "#ffffff",
-    cardBorder: "rgba(124, 58, 237, 0.06)",
-    cardHover: "rgba(124, 58, 237, 0.03)",
-    page: "#faf7ff",
+    cardBorder: "rgba(15, 23, 42, 0.06)",
+    cardHover: "rgba(15, 23, 42, 0.03)",
+    page: "#f0f2f5",
   },
   text: {
-    primary: "#1f1235",
-    secondary: "#6b5b80",
-    muted: "#a89cba",
+    primary: "#1a2233",
+    secondary: "#4a4a4a",
+    muted: "#8a8f98",
   },
   accent: {
-    primary: "#7c3aed",
-    gradient: "linear-gradient(135deg, #7c3aed, #ec4899)",
+    primary: "#2f4b7c",
+    gradient: "linear-gradient(135deg, #2f4b7c, #2563eb)",
   },
 };
