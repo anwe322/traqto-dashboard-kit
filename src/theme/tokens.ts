@@ -51,6 +51,44 @@ export const palettes: Record<PaletteName, Palette> = {
 
 export const defaultPalette: PaletteName = "dezent";
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Dunkelmodus-fähige Tokens.
+//
+// Die Chart- und Widget-Bausteine lesen `tokens.surface.*` / `tokens.text.*`
+// direkt (u. a. als Recharts-`stroke`/`fill`-SVG-Attribute — dort greift CSS
+// `var()` NICHT). Deshalb liefern wir hier KONKRETE Hex-Werte über Getter, die
+// bei jedem Zugriff den aktuellen App-Modus abfragen (`<html data-theme>` wird
+// von der Host-App gesetzt). So folgen weiße Karten + dunkler Text sauber dem
+// Hell-/Dunkel-Umschalter, ohne dass die einzelnen Komponenten es wissen müssen.
+// ─────────────────────────────────────────────────────────────────────────────
+
+const lightSurface = {
+  card: "#ffffff",
+  cardBorder: "rgba(15, 23, 42, 0.06)",
+  cardHover: "rgba(15, 23, 42, 0.03)",
+  page: "#f0f2f5",
+};
+const darkSurface = {
+  card: "#1a2838",
+  cardBorder: "rgba(255, 255, 255, 0.09)",
+  cardHover: "rgba(255, 255, 255, 0.05)",
+  page: "#0f1824",
+};
+const lightText = {
+  primary: "#1a2233",
+  secondary: "#4a4a4a",
+  muted: "#8a8f98",
+};
+const darkText = {
+  primary: "#e8eaed",
+  secondary: "#b8bdc4",
+  muted: "#9ca3af",
+};
+
+function isDarkTheme(): boolean {
+  return typeof document !== "undefined" && document.documentElement.dataset.theme === "dark";
+}
+
 export const tokens = {
   radius: {
     sm: "10px",
@@ -71,16 +109,11 @@ export const tokens = {
     md: "0 10px 30px rgba(15, 23, 42, 0.10)",
     lg: "0 22px 56px rgba(15, 23, 42, 0.14)",
   },
-  surface: {
-    card: "#ffffff",
-    cardBorder: "rgba(15, 23, 42, 0.06)",
-    cardHover: "rgba(15, 23, 42, 0.03)",
-    page: "#f0f2f5",
+  get surface() {
+    return isDarkTheme() ? darkSurface : lightSurface;
   },
-  text: {
-    primary: "#1a2233",
-    secondary: "#4a4a4a",
-    muted: "#8a8f98",
+  get text() {
+    return isDarkTheme() ? darkText : lightText;
   },
   accent: {
     primary: "#2f4b7c",
