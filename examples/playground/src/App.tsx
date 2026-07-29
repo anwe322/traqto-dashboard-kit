@@ -6,6 +6,7 @@ import {
   WidgetPicker,
   WidgetConfigPanel,
   useDashboard,
+  parseShareLink,
   type DashboardLayout,
 } from "@traqto/dashboard-kit";
 import { registerDemoWidgets } from "./widgets";
@@ -38,12 +39,67 @@ const defaultLayout: DashboardLayout = {
 
 export function App() {
   const ctx = useMemo(() => ({ userId: "demo-user" }), []);
+  // Freigabe-Link in der URL (#share=…)? Dann die geteilte Ansicht read-only zeigen.
+  const sharedLayout = useMemo(() => parseShareLink(), []);
+
+  if (sharedLayout) {
+    return (
+      <div style={{ maxWidth: 1400, margin: "0 auto", padding: "24px 32px" }}>
+        <DashboardProvider defaultLayout={sharedLayout} ctx={ctx} readOnly>
+          <SharedViewBanner />
+          <Workspace />
+        </DashboardProvider>
+      </div>
+    );
+  }
 
   return (
     <div style={{ maxWidth: 1400, margin: "0 auto", padding: "24px 32px" }}>
       <DashboardProvider defaultLayout={defaultLayout} ctx={ctx} storageKey="traqto-dashboard-kit-playground">
         <Workspace />
       </DashboardProvider>
+    </div>
+  );
+}
+
+function SharedViewBanner() {
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 12,
+        flexWrap: "wrap",
+        padding: "10px 16px",
+        marginTop: 16,
+        borderRadius: 14,
+        border: "1px solid rgba(124, 58, 237, 0.25)",
+        background: "rgba(124, 58, 237, 0.08)",
+        fontSize: 13,
+      }}
+    >
+      <span>
+        🔗 Du siehst eine <strong>per Freigabe-Link geteilte Dashboard-Ansicht</strong>. Änderungen sind hier nicht
+        möglich.
+      </span>
+      <button
+        type="button"
+        onClick={() => {
+          window.location.href = window.location.pathname;
+        }}
+        style={{
+          padding: "6px 12px",
+          borderRadius: 10,
+          border: "1px solid rgba(124, 58, 237, 0.35)",
+          background: "#fff",
+          cursor: "pointer",
+          fontWeight: 600,
+          fontSize: 13,
+        }}
+      >
+        Eigenes Dashboard öffnen
+      </button>
     </div>
   );
 }
