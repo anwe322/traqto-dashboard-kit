@@ -45,4 +45,5 @@ export type DashboardLayout = {
   version: number;
   items: LayoutItem[];
   palette?: PaletteName;
+  updatedAt?: string;
 };
